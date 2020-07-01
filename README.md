@@ -13,11 +13,11 @@
 
 
 # Instructions:
-Click to change game.&nbsp;
-Double click to select game.&nbsp;
-Hold to return game selection.&nbsp;
-6 available games.&nbsp;
-Pick a game & Play.&nbsp;
-No more rules provided.&nbsp;
+-Click to change game.&nbsp;
+-Double click to select game.&nbsp;
+-Hold to return game selection.&nbsp;
+-6 available games.&nbsp;
+-Pick a game & Play.&nbsp;
+-No more rules provided.&nbsp;
 
 
