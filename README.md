@@ -20,4 +20,13 @@
 - Pick a game & Play.&nbsp;
 - No more rules provided.&nbsp;
 
+# Not recomended for people with:
+- [x] Mood disorders (such as depression or bipolar disorder)
+- [x] Anxiety disorders
+- [x] Personality disorders
+- [x] Psychotic disorders (such as schizophrenia)
+- [x] Trauma-related disorders (such as post-traumatic stress disorder)
+- [x] Substance abuse disorders
+
+
 
