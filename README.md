@@ -8,7 +8,7 @@
 
 1 player.
 
-# AS Seen on TV:
+# As Seen on TV:
 ![Fidgetcomic](/images/fidgetcomic.jpg) 
 
 
