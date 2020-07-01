@@ -1,3 +1,113 @@
+/*
+          
+          Fidget Blink
+          Lead development by FJ Rios
+          ONE Blink (No more, and of course, no less)
+          
+          Rules:
+          Click to change game.
+          Double click to select game.
+          Hold to return game selection.
+          6 available games.
+          Pick a game & Play. 
+          No more rules provided.
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+                    
+          STOP READING
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          STOP READING OR WE WILL CALL THE POLICE
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+
+
+
+
+
+
+          
+          SPOILERS BELOW THIS LINE
+*/
+
+
+
 enum gameState {SELECTOR, TIME, MORSE, PAINT, AVOID, NUMBER, JUMP};  //Multigame mode
 byte gameState = SELECTOR;
 byte selectedGame = 1;//Starting game
@@ -31,9 +141,8 @@ byte light;
 Timer pressed;
 
 //JUMP
-Timer fire;
 int brightness=255;
-int step = 10;
+byte step = 10;
 byte wrongFace2;
 
 void setup() {
@@ -68,14 +177,14 @@ void loop() {
   }
   if (buttonLongPressed()) { //Go to selector
     gameState = SELECTOR;
-    selectedGame = 1;
     TIME_TIMER = 500;
     timeFace = 0;
-    wrongFace = 0;
+    wrongFace = 3;
     reset = 0;
     rotation = 0;
+    level = 1;
+    wrongFace2 = 2;
   }
-
 }
 
 void selectorLoop() {
@@ -85,37 +194,26 @@ void selectorLoop() {
       selectedGame = 1;
     }
   }
-
     switch (selectedGame){ //Show game preview
       case 1: //Time
       setColorOnFace( WHITE, 0);
       break;
       case 2: //Morse
-      setColorOnFace( WHITE, 0);
-      setColorOnFace( WHITE, 2);
-      setColorOnFace( WHITE, 3);
-      setColorOnFace( WHITE, 4);
+      setColorOnFace( WHITE, 0); setColorOnFace( WHITE, 2); setColorOnFace( WHITE, 3); setColorOnFace( WHITE, 4);
       break;
       case 3: //Paint
       setColor(WHITE);
       break;
       case 4: //Avoid
-      setColorOnFace( WHITE, 0);
-      setColorOnFace( WHITE, 3);
+      setColorOnFace( WHITE, 0); setColorOnFace( WHITE, 3);
       break;
       case 5: //Number
-      setColorOnFace( WHITE, 0);
-      setColorOnFace( WHITE, 2);
-      setColorOnFace( WHITE, 4);
+      setColorOnFace( WHITE, 0); setColorOnFace( WHITE, 2); setColorOnFace( WHITE, 4);
       break;
       case 6: //Jump
-      setColorOnFace( WHITE, 1);
-      setColorOnFace( WHITE, 2);
-      setColorOnFace( WHITE, 4);
-      setColorOnFace( WHITE, 5);
+      setColorOnFace( WHITE, 1); setColorOnFace( WHITE, 2); setColorOnFace( WHITE, 4); setColorOnFace( WHITE, 5);
       break;
     }
-    
   if (buttonDoubleClicked()){ //Select games and initial variables
     switch (selectedGame){
       case 1:
@@ -130,23 +228,24 @@ void selectorLoop() {
       break;
       case 4:
       gameState = AVOID;
-      timeFace = 3;
       break;
       case 5:
       gameState = NUMBER;
       break;
       case 6:
       gameState = JUMP;
+      rotation = 2;
+      brightness = 255;
       break;
     }
   }
 }
+
 void timeLoop() {
   if (!timeRound.isExpired()){
     if (timeTimer.isExpired()){
       timeTimer.set(TIME_TIMER);
-      if (rotation == 0) timeFace++;
-      if (rotation == 1) timeFace--;
+      if (rotation == 0) timeFace++; else timeFace--;
       if(timeFace>5)timeFace = 0;
       if(timeFace<0)timeFace = 5;
     }
@@ -183,19 +282,17 @@ void morseLoop() {
     for (int i = 0; i < MAX_LEVEL; i++){ 
       sequence[i] = random(1);
     }
-    if (sequence[0] == 0) timeTimer.set(TIME_TIMER);
-    if (sequence[0] == 1) timeTimer.set(TIME_TIMER*2);
+    if (sequence[0] == 0) timeTimer.set(TIME_TIMER); else timeTimer.set(TIME_TIMER*2);
     show = 0;
     imput = 0;
   }
   if (show < level){ //show sequence
     light = sequence[show];
-    if (light == 0) {setColorOnFace( WHITE, 0);}
-    if (light == 1) {setColorOnFace( WHITE, 2); setColorOnFace( WHITE, 3); setColorOnFace( WHITE, 4);}
+    if (light == 0) {setColorOnFace( WHITE, 0);} else  {setColorOnFace( WHITE, 2); setColorOnFace( WHITE, 3); setColorOnFace( WHITE, 4);}
     if (timeTimer.isExpired() && sequence[show+1] == 0) {show++; timeTimer.set(TIME_TIMER);}
     if (timeTimer.isExpired() && sequence[show+1] == 1) {show++; timeTimer.set(TIME_TIMER*2);}
   }
-  if (show = level){ //enter sequence
+  if (show == level){ //enter sequence
     if (imput < level){
       if (buttonPressed()) {pressed.set(500);}
       if (buttonReleased()) {
@@ -208,12 +305,12 @@ void morseLoop() {
       }
     }
   }
-  if (imput = level){//win
+  if (imput == level){//win
     setColor(GREEN);
     if (wrongTimer.isExpired()){
       show = 0;
       level++; 
-      if (level == 10){TIME_TIMER = TIME_TIMER - ((random(2)+1)*50); level = 1;}
+      if (level == MAX_LEVEL){TIME_TIMER = TIME_TIMER - ((random(2)+1)*50); level = 1;}
     }
   }
   if (level==0){//lose
@@ -251,7 +348,8 @@ void paintLoop() {
   if (buttonPressed()) face0 = ~face0;
   if (face0 == face1 == face2 == face3 == face4 == face5 == 1){
     TIME_TIMER = TIME_TIMER - ((random(2)+1)*10);
-    reset=0;
+    timeRound.set(5000);
+    reset = 0;
   }
   if (timeRound.isExpired()){
     setColor(RED);
@@ -263,7 +361,7 @@ void paintLoop() {
   if (timeRound.isExpired() && wrongTimer.isExpired()){
     timeRound.set(5000);
     TIME_TIMER = 500;
-    reset=0;
+    reset = 0;
   } 
 }
 
@@ -272,7 +370,7 @@ void avoidLoop() {
     if (timeTimer.isExpired()){
       rotation = random(2);
       if (rotation == 2) {wrongFace++;}
-      if(wrongFace>5){wrongFace = 0; TIME_TIMER = TIME_TIMER - ((random(2)+1)*50);}
+      if (wrongFace>5){wrongFace = 0; TIME_TIMER = TIME_TIMER - ((random(2)+1)*50);}
       timeTimer.set(TIME_TIMER);
     }
     if (buttonPressed()){
@@ -291,8 +389,8 @@ void avoidLoop() {
   }
     if (reset == 1 && wrongTimer.isExpired()){
     reset = 0;
-    wrongFace = 0;
-    timeFace = 3;
+    wrongFace = 3;
+    timeFace = 0;
     TIME_TIMER = 500;
   } 
 }
@@ -309,11 +407,11 @@ void numberLoop() {
   if (show < level){ //show sequence
     light = sequence[show];
     if (light == 0) {setColorOnFace( WHITE, 0);}
-    if (light == 1) {setColorOnFace( WHITE, 0); setColorOnFace( WHITE, 3);}
-    if (light == 2) {setColorOnFace( WHITE, 0); setColorOnFace( WHITE, 2); setColorOnFace( WHITE, 4);}
+    else if (light == 1) {setColorOnFace( WHITE, 0); setColorOnFace( WHITE, 3);}
+    else {setColorOnFace( WHITE, 0); setColorOnFace( WHITE, 2); setColorOnFace( WHITE, 4);}
     if (timeTimer.isExpired()) {show++; timeTimer.set(TIME_TIMER);}
   }
-  if (show = level){ //enter sequence
+  if (show == level){ //enter sequence
     if (imput < level){
       if (buttonSingleClicked()) {your_sequence[imput] = 1; reset++;}
       if (buttonDoubleClicked()) {your_sequence[imput] = 2; reset++;}
@@ -324,7 +422,7 @@ void numberLoop() {
       }
     }
   }
-  if (imput = level){//win
+  if (imput == level){//win
     setColor(GREEN);
     if (wrongTimer.isExpired()){
       show = 0;
@@ -332,7 +430,7 @@ void numberLoop() {
       if (level == 10){TIME_TIMER = TIME_TIMER - ((random(2)+1)*50); level = 1;}
     }
   }
-  if (level==0){//lose
+  if (level == 0){//lose
     setColor(RED);
     if (wrongTimer.isExpired()){
       show = 0;
@@ -343,7 +441,7 @@ void numberLoop() {
 }
 
 void jumpLoop() {
-  if (fire.isExpired()) { 
+  if (timeTimer.isExpired()) { 
     if (brightness - step < 0 ) {
       brightness = 255;
       wrongFace++;
@@ -352,13 +450,13 @@ void jumpLoop() {
       if (wrongFace2 > 5)wrongFace2 = wrongFace2 - 6;
     }
   brightness -= step;  
-  fire.set(100);
+  timeTimer.set(100);
   }
-  if (buttonSingleClicked()) {timeFace++;}
-  if (buttonDoubleClicked()) {timeFace = timeFace + 2;}
-  if (buttonMultiClicked()) {if (buttonClickCount() == 3) {timeFace = timeFace + 3;}}
+  if (buttonSingleClicked()) {timeFace++; if (rotation != timeFace) wrongFace = timeFace;}
+  if (buttonDoubleClicked()) {timeFace = timeFace + 2; if (rotation != timeFace) wrongFace = timeFace;}
+  if (buttonMultiClicked()) {if (buttonClickCount() == 3) {timeFace = timeFace + 3; if (rotation != timeFace) wrongFace = timeFace;}}
   if (timeFace > 5)timeFace = timeFace - 6;
-  if (rotation = timeFace){
+  if (rotation == timeFace){
     rotation = rotation + (random(2)+1);
     if (rotation > 5)rotation = rotation - 6;
   }
@@ -366,7 +464,7 @@ void jumpLoop() {
   setColorOnFace( WHITE, timeFace);
   setColorOnFace( dim( RED,  255 - brightness  ), wrongFace);
   setColorOnFace( dim( RED,  brightness  ), wrongFace2);
-  if (wrongFace = timeFace){
+  if (wrongFace == timeFace){
     setColor(RED);
     if (reset == 0){
       wrongTimer.set(1000);
@@ -375,10 +473,10 @@ void jumpLoop() {
   }
   if (reset == 1 && wrongTimer.isExpired()){
     reset = 0;
-    wrongFace = 4;
-    wrongFace2 = 3;
+    wrongFace = 3;
+    wrongFace2 = 2;
     timeFace = 0;
     rotation = 2;
+    brightness = 255;
   } 
-  
 }
