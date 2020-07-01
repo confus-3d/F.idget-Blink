@@ -1,4 +1,4 @@
-![Fidgetbanner](/fidgetbanner.jpg) 
+![Fidgetbanner](/images/fidgetbanner.jpg) 
 
 
 # ~~Widget~~Fidget Blink
@@ -9,7 +9,7 @@
 1 player.
 
 # AS Seen on TV:
-
+![Fidgetcomic](/images/fidgetcomic.jpg) 
 
 
 # Instructions:
