@@ -29,7 +29,7 @@
 
 
 
- 
+
 
 
 
@@ -140,10 +140,6 @@ byte imput;
 byte light;
 Timer pressed;
 
-//JUMP
-int brightness=255;
-byte step = 10;
-byte wrongFaceb;
 
 void setup() {
   // put your setup code here, to run once:
@@ -152,6 +148,12 @@ void setup() {
 
 void loop() {
   setColor(OFF); //Clear display buffer
+
+  if (buttonLongPressed()) { //Go to selector
+    gameState = SELECTOR;
+    resetLoop();
+  }
+  
   switch (gameState) { //Detects gamestate
     case SELECTOR:
       selectorLoop();
@@ -175,8 +177,9 @@ void loop() {
       jumpLoop();
       break;
   }
-  if (buttonLongPressed()) { //Go to selector
-    gameState = SELECTOR;
+}
+
+void resetLoop(){
     TIME_TIMER = 500;
     timeTimer.set(TIME_TIMER);
     timeFace = 0;
@@ -184,8 +187,6 @@ void loop() {
     reset = 0;
     rotation = 0;
     level = 1;
-    wrongFaceb = 2;
-  }
 }
 
 void selectorLoop() {
@@ -235,8 +236,6 @@ void selectorLoop() {
       break;
       case 6:
       gameState = JUMP;
-      rotation = 2;
-      brightness = 255;
       break;
     }
   }
@@ -256,7 +255,7 @@ void timeLoop() {
     if (!wrongTimer.isExpired()){setColorOnFace( RED, wrongFace);}
   }
   if (buttonPressed() && timeFace == 0){
-    TIME_TIMER = TIME_TIMER - ((random(2)+1)*5);
+    TIME_TIMER = TIME_TIMER - ((random(2)+1)*10);
     timeRound.set(5000);
     rotation = random(1);
   }
@@ -273,9 +272,7 @@ void timeLoop() {
   }  
   if (timeRound.isExpired() && wrongTimer.isExpired()){
     timeRound.set(5000);
-    TIME_TIMER = 500;
-    reset=0;
-    timeFace = 0;
+    resetLoop();
   } 
 }
 
@@ -350,7 +347,7 @@ void paintLoop() {
   if (face4==1) setColorOnFace( WHITE, 4);
   if (face5==1) setColorOnFace( WHITE, 5);
   if (buttonPressed()) face0 = (face0 + 1) % 2;
-  if (face0 == face1 && face1 == face2 && face2 == face3 && face3 == face4 && face4 == face5 && face1 == 1){
+  if (face0 == 1 && face1 == 1 && face2 == 1 && face3 == 1 && face4 == 1 && face5 == 1){
     TIME_TIMER = TIME_TIMER - ((random(2)+1)*10);
     timeRound.set(5000);
     reset = 0;
@@ -364,8 +361,7 @@ void paintLoop() {
   }  
   if (timeRound.isExpired() && wrongTimer.isExpired()){
     timeRound.set(5000);
-    TIME_TIMER = 500;
-    reset = 0;
+    resetLoop();
   } 
 }
 
@@ -447,27 +443,18 @@ void numberLoop() {
 
 void jumpLoop() {
   if (timeTimer.isExpired()) { 
-    if (brightness - step < 0 ) {
-      brightness = 255;
-      wrongFace = wrongFace+1;
-      wrongFaceb = wrongFaceb+1;
-      if (wrongFace > 5)wrongFace = wrongFace - 6;
-      if (wrongFaceb > 5)wrongFaceb = wrongFaceb - 6;
-    }
-    brightness -= step;  
-    timeTimer.set(100);
+    wrongFace = (wrongFace+1)%6;
+    timeTimer.set(TIME_TIMER*2);
   }
   if (buttonSingleClicked()) {timeFace = timeFace + 1; if (rotation != timeFace) wrongFace = timeFace;}
   if (buttonDoubleClicked()) {timeFace = timeFace + 2; if (rotation != timeFace) wrongFace = timeFace;}
-  if (buttonMultiClicked()) {if (buttonClickCount() == 3) {timeFace = timeFace + 3; if (rotation != timeFace) wrongFace = timeFace;}}
-  if (timeFace > 5)timeFace = timeFace - 6;
-  if (rotation == timeFace){
-    rotation = (rotation + (random(2)+1)) % 6;
-  }
+  if (buttonMultiClicked())  {if (buttonClickCount() == 3) {timeFace = timeFace + 3; if (rotation != timeFace) wrongFace = timeFace;}}
+  if (timeFace > 5)          timeFace = timeFace - 6;
+  if (rotation == timeFace)  {rotation = (rotation + (random(2)+1)) % 6; TIME_TIMER = TIME_TIMER - ((random(2)+1)*10);}
+  
   setColorOnFace( YELLOW, rotation);
   setColorOnFace( WHITE, timeFace);
-  setColorOnFace( dim( RED,  255 - brightness  ), wrongFace);
-  setColorOnFace( dim( RED,  brightness  ), wrongFaceb);
+  setColorOnFace( RED, wrongFace);
   if (wrongFace == timeFace){
     setColor(RED);
     if (reset == 0){
@@ -476,11 +463,6 @@ void jumpLoop() {
     }
   }
   if (reset == 1 && wrongTimer.isExpired()){
-    reset = 0;
-    wrongFace = 3;
-    wrongFaceb = 2;
-    timeFace = 0;
-    rotation = 2;
-    brightness = 255;
+    resetLoop();
   } 
 }
